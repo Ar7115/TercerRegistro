@@ -1,0 +1,51 @@
+#Autor: Luis Armando Miranda Alcocer
+#Traductor con menú, uso de diccionarios
+
+#Diccionario
+d={"chiken":"pollito", "pencil":"lápices", "pen":"pluma", "tree":"arbol", "berry":"baya"}
+
+
+#Recibe la palabra en inglés y regresa la palabra en español
+def traducirIE(palabra):
+    if palabra in d:
+        return d[palabra]
+    return "La palabra no existe"
+
+#Recibe la palabra en español y regresa la palabra en inglés
+def traducirEI(palabra):
+    for llave, valor in d.items():
+        if valor==palabra:
+            return llave
+
+    return "La palabra no existe"
+
+def leerOpcion():
+    print("""
+    1.-Traducir Inglés --> Español
+    2.- Traducir Español --> Inglés
+    3.-Salir
+    """)
+    opcion=int(input("Teclea tu opción: "))
+    return opcion
+
+def main ():
+    opcion= leerOpcion()
+
+    while opcion != 0:
+        if opcion==1: #Inglés -->  español
+            palabra = input("Escribe la palabra en inglés: ")
+            traduccion = traducirIE(palabra)
+            print("En español es: ", traduccion)
+
+        elif opcion ==2: #español --> inglés
+            palabra = input("Escribe la palabra en español: ")
+            traduccion = traducirEI(palabra)
+            print("En inglés es: ", traduccion)
+
+        else:
+            print ("Opcion incorrecta")
+
+        opcion = leerOpcion()
+
+
+main()
