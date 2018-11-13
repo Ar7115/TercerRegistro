@@ -1,0 +1,26 @@
+#Autor: Luis Armando Miranda Alcocer
+#Analizar calificaciones con un archivo.
+
+def main():
+    entrada= open("calificaciones.csv","r") #Entrada asignada a una variable.
+    salida= open("promedios.csv", "w") #Abrir un archivo de texto con los resultados. w es para escribir
+
+    entrada.readline() #Lee una línea, pero la ignora
+    for linea in entrada: #Lee línea por línea, cada línea del archivo.
+        datos= linea.split(",") #Toma una cadena completa, y la divide    ["pepito", "a013...", "90", "..."]
+        matricula = datos[1][2:]    #[2:] Desde el caracter no. 2 para quitar el "A0"
+        r1= int(datos[2]) #Guardarlas como entero
+        r2=int(datos[3])
+        r3=int(datos[4])
+        promedio = (r1+r2+r3)/3
+        mensaje="Aprobado" #Suponemos que sí aprobó
+        if promedio < 70:   #Preguntar si no
+            mensaje= "No aprobado"
+        #print(matricula,",",  "%.2f" %promedio,",", mensaje,sep="")
+        print("%s,%.2f,%s" %(matricula,promedio,mensaje))
+        salida.write("%s,%.2f,%s\n" %(matricula,promedio,mensaje)) #\n es para que coloque en el archivo por renglones
+
+    entrada.close() #Cerrar archivo
+    salida.close() #Cerrar archivo
+
+main()
