@@ -1,0 +1,42 @@
+#Autor: Luis Armando Miranda Alcocer
+#Graficar la frecuencia de aparición de cada letra en el texto de Quijote
+
+import matplotlib.pyplot as plot
+
+
+def graficar(contadores):
+    datosX = contadores.keys()  #Los datos en eje X para graficar son las llaves del diccionario
+    datosY = contadores.values()    #Datos en eje Y son valores de diccionarios
+
+    plot.plot(datosX, datosY)
+    plot.title("Letras en el Quijote de la Mancha") #Título de la gráfica
+    plot.xlabel("Letras")
+    plot.ylabel("Frecuencia")
+
+    plot.show()
+
+def procesar(entrada):
+
+    contadores = {} #Diccionario de contadores  "e": 231
+    contadorLineas=0
+    for linea in entrada:   #Visita linea x linea del archivo
+        contadorLineas += 1
+        for letra in linea.upper():     #Visita cada letra de la cadena, DONDE TODAS SON MAYÚSCULAS
+            if letra.isalpha():     #Cuando la letra es un caracter alfabético, continua
+                if letra in contadores:     #Preguntar: Ya existe en diccionario???
+                    contadores[letra]+= 1   #Cuena uno más
+                else:   #Si aún no hay entrada en el diccionario, hay que crearla
+                    contadores[letra] = 1
+    print (contadores)
+    print (contadorLineas)
+
+
+    graficar(contadores)
+
+def main():
+    entrada = open("quijote.txt", "r", encoding="UTF-8")
+    procesar(entrada)
+    entrada.close()
+
+
+main()
