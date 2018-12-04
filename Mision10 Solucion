@@ -1,0 +1,185 @@
+# Solución. Misión 10.
+
+import matplotlib.pyplot as plot
+
+# 4. Buscar los equipos que tienen mal reportado el número de puntos.
+# Recibe el nombre del archivo que contiene la información
+def buscarEquiposError(nombreArchivo):
+
+    # Abre el archivo en modo lectura
+    entrada = open(nombreArchivo, "r", encoding="UTF-8")
+
+    equipos = []        # Aquí almacena el nombre de los equipos con error
+    entrada.readline()  # Ignora el Título 1
+    entrada.readline()  # Ignora el Título 2
+
+    for linea in entrada:   # Con este for visita cada una de las líneas del archivo
+        # Un ejemplo de lo que contiene linea: 'Veracruz&16&2&4&10&16&36&-20&10\n'
+        datos = linea.split("&")  # Separa en componentes la cadena ["Veracruz", "16", "2", "4", "10", "16", "36", "-20", "10\n"], regresa una lista
+        equipo = datos[0]           # Nombre del equipo
+        jg = int(datos[2])          # Juegos jugados convertidos a entero
+        je = int(datos[3])          # Juegos empatados, convertido a entero
+        puntosReportados = int(datos[8]) # Dato reportado, convertido a entero
+        puntos = jg*3 + je*1
+        if puntos != puntosReportados:      # Correcto?
+            equipos.append(equipo)
+
+    entrada.close()     # Como buen ciudadado, cierra el archivo.
+
+    return equipos      # Entrega la lista de equipos con errors
+
+
+# 7. Muestra una gráfica de equipos vs. puntos de acuerdo con el archivo.
+# (no regresa datos, solo dibuja la gráfica con matplotlib, el orden no importa)
+def graficarPuntos(nombreArchivo):
+    entrada = open(nombreArchivo, "r", encoding="UTF-8")
+    entrada.readline()  # Título 1
+    entrada.readline()  # Título 2
+
+    listaEquipos = []   # eje x
+    listaPuntos = []    # eje y
+
+    for linea in entrada:
+        datos = linea.split("&")    # "&" es el separador de datos
+        listaEquipos.append(datos[0])   # Nombre
+        listaPuntos.append(int(datos[8]))   # Puntos (este lleva \n al final, pero int lo quita)
+
+    # Traza la gráfica
+    plot.plot(listaEquipos, listaPuntos)
+    plot.show()
+
+    entrada.close()
+
+
+# 1. Mostrar los nombres de los equipos en mayúsculas ordenados alfabéticamente.
+#  (Regresa una lista)
+def obtenerEquiposOrdenados(nombreArchivo):
+    entrada = open(nombreArchivo, "r", encoding="UTF-8")
+    entrada.readline()  # Título 1
+    entrada.readline()  # Título 2
+
+    listaEquipos = []
+
+    for linea in entrada:
+        datos = linea.split("&")  # "&" es el separador de datos
+        listaEquipos.append(datos[0].upper())  # agrega cada nombre convertido a mayúsculas
+
+    entrada.close()
+
+    listaEquipos.sort()
+    return listaEquipos
+
+
+# 2. Mostrar el nombre de los equipos seguido de los puntos que llevan hasta el
+# momento de acuerdo con el archivo. (Regresa una lista de duplas o un diccionario)
+def obtenerEquiposPuntos(nombreArchivo):
+    entrada = open(nombreArchivo, "r", encoding="UTF-8")
+    entrada.readline()  # Título 1
+    entrada.readline()  # Título 2
+
+    diccionarioPuntos = {}      # Diccionario vacío, tendrá parejas "equipo":puntos
+
+    for linea in entrada:
+        datos = linea.split("&")    # "&" es el separador de datos
+        nombre = datos[0]           # Nombre del equipo
+        puntos = int(datos[8])      # Puntos
+        diccionarioPuntos[nombre] = puntos  # Crea la nueva entrada en el diccionario
+
+    entrada.close()
+
+    return diccionarioPuntos
+
+
+# 3. Mostrar la lista de los equipos que han perdido 3 partidos o menos. (Regresa una lista)
+def obtenerEquiposMenosPerdidos(nombreArchivo):
+    entrada = open(nombreArchivo, "r", encoding="UTF-8")
+    entrada.readline()  # Título 1
+    entrada.readline()  # Título 2
+
+    listaEquipos = []
+
+    for linea in entrada:
+        datos = linea.split("&")  # "&" es el separador de datos
+        juegosPerdidos = int(datos[4])
+        if juegosPerdidos <= 3:
+            listaEquipos.append(datos[0])
+
+    entrada.close()
+
+    return listaEquipos
+
+
+# 5. Mostrar el nombre del equipo con la menor diferencia de goles. (regresa una cadena)
+def obtenerEquipoMenorDiferencia(nombreArchivo):
+    entrada = open(nombreArchivo, "r", encoding="UTF-8")
+    entrada.readline()  # Título 1
+    entrada.readline()  # Título 2
+
+    linea = entrada.readline()      # Lee el primer renglón
+    datos = linea.split("&")        # "&" es el separador de datos
+    menorDiferencia = int(datos[7]) # Suponemos que el primero es el de menor diferencia
+    equipoMenor = datos[0]          # Suponemos que el primero es el de menor diferencia
+
+    # Buscamos entre los demás uno menor
+    for linea in entrada:
+        datos = linea.split("&")  # "&" es el separador de datos
+        diferencia = int(datos[7])
+        if diferencia < menorDiferencia:    # Hay uno menor??
+            menorDiferencia = diferencia    # Si, entonces guardamos el nuevo menor
+            equipoMenor = datos[0]          # El nuevo equipo con la menor diferencia
+
+    entrada.close()
+
+    return equipoMenor
+
+
+# 6. Generar un nuevo archivo (Puntos.txt) que contiene el nombre y los puntos de
+# los equipos que se encuentran en los últimos 5 lugares de la tabla de acuerdo con el archivo.
+# (No regresa datos, solo escribe en el archivo nuevo.)
+def escribirUltimosLugares(nombreArchivo):
+    '''
+    La estrategia es hacer una lista de tuplas (puntos, equipo), luego ordenar de mayor a menor y,
+    finalmente, procesar los últimos 5
+    '''
+    entrada = open(nombreArchivo, "r", encoding="UTF-8")
+    entrada.readline()  # Título 1
+    entrada.readline()  # Título 2
+
+    lista = []      # Esta es la lista de tuplas (puntos, equipo)
+
+    # Buscamos entre los demás uno menor
+    for linea in entrada:
+        datos = linea.split("&")  # "&" es el separador de datos
+        nombre = datos[0]  # Nombre del equipo
+        puntos = int(datos[8])  # Puntos
+        pareja = (puntos, nombre)
+        lista.append(pareja)
+
+    entrada.close() # Ya no se va a usar, lo cerramos.
+
+    # Ordenamos de manera descendente (solo por el ejercicio, para procesar los últimos 5)
+    lista.sort(reverse=True)
+    # Ahora escribimos en el archivo de salida los últimos 5
+    salida = open("Puntos.txt", "w")
+    for k in range(5):          # Procesa 5 datos
+        pareja = lista.pop()    # Recupera y borra el ÚLTIMO dato
+        salida.write("%s, %d\n" % (pareja[1], pareja[0]))   # La tupla se accede también con índices
+
+    salida.close()
+
+    print("Termina de generar el archivo. Abre Puntos.txt en el editor para ver el resultado.")
+
+
+# Prueba rápida de las funciones
+def main():
+    errores = buscarEquiposError("LigaMX.txt")
+    print("Equipos con error:",errores)
+    graficarPuntos("LigaMX.txt")
+    print("Lista de equipos ordenados:", obtenerEquiposOrdenados("LigaMX.txt"))
+    print("Equipos y puntos:",obtenerEquiposPuntos("LigaMX.txt"))
+    print("Equipos con 3 o menos juegos perdidos:",obtenerEquiposMenosPerdidos("LigaMX.txt"))
+    print("Equipo más goleado:", obtenerEquipoMenorDiferencia("LigaMX.txt"))
+    escribirUltimosLugares("LigaMX.txt")
+
+
+main()
